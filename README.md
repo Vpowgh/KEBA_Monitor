@@ -8,7 +8,6 @@ KEBA charger monitor through ModbusTCP.
 Opening address http://yourIP/ with a browser shows simple user interface with current charger status.
 
 # JSON API
-## Status
 From address http://yourIP/status a JSON formatted data is returned.
 
 # Links
