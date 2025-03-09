@@ -5,10 +5,10 @@ KEBA charger monitor through ModbusTCP.
 - Copy .py and .html files to same directory. Modify your KEBA charging station IP address in .py file.
 
 # Web interface
-Opening address http://yourIP/ with a browser shows simple user interface with current charger status.
+Opening address http://yourIP:8082/ with a browser shows simple user interface with current charger status.
 
 # JSON API
-From address http://yourIP/status a JSON formatted data is returned.
+From address http://yourIP:8082/status a JSON formatted data is returned. The keys are directly Modbus register addresses, except key 0 tells communication status (true=ok, false=error).
 
 # Links
 KEBA ModbusTCP manual:
