@@ -14,4 +14,5 @@ From address http://yourIP:8082/status a JSON formatted data is returned. The ke
 
 # Links
 KEBA ModbusTCP manual: https://www.keba.com/download/x/dea7ae6b84/kecontactp30modbustcp_pgen.pdf
+
 KEBA UDP manual: https://www.keba.com/download/x/4a925c4c61/kecontactp30udp_pgen.pdf
