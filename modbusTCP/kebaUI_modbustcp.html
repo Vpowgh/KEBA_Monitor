@@ -1,0 +1,212 @@
+<!--
+kebaUI_modbustcp.html
+KEBA Monitor - Simple web monitor for KEBA charger through ModbusTCP
+Developed by Vpow 2025-
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<link rel="icon" href="data:,">
+<style>
+table.MainTable {
+  width: 90%;
+  background-color: #ffffff;
+  border-collapse: collapse;
+  border-width: 2px;
+  border-color: #2383e2;
+  border-style: solid;
+  color: #000000;
+  text-align: center;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size:30px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+table.MainTable td, table.MainTable th {
+  border-width: 2px;
+  border-color: #2383e2;
+  border-style: solid;
+  padding: 3px;
+}
+
+table.MainTable thead {
+  background-color: #1c74df;
+}
+
+
+table.SmallTextTable {
+  font-family:"Courier New", Courier, monospace;
+  font-size:14px;
+  text-align: right;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+table.SmallTextTable td, table.SmallTextTable th {
+  border:none;
+  padding: 1px;
+}
+</style>
+
+<title>KEBA KeContact P30 Monitor [ModbusTCP]</title>
+</head>
+
+<body>
+<table class="MainTable">
+  <thead>
+    <tr>
+      <th></th>
+      <th>KEBA KeContact P30 Monitor</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Connection</td>
+      <td id='connected'>-</td>
+    </tr>
+    <tr>
+      <td>Charging state</td>
+      <td id='1000'>-</td>
+    </tr>
+    <tr>
+      <td>Cable state</td>
+      <td id='1004'>-</td>
+    </tr>
+    <tr>
+      <td>Error code</td>
+      <td id='1006'>-</td>
+    </tr>
+    <tr>
+      <td>I1 [A]</td>
+      <td id='1008'>-</td>
+    </tr>
+    <tr>
+      <td>I2 [A]</td>
+      <td id='1010'>-</td>
+    </tr>
+    <tr>
+      <td>I3 [A]</td>
+      <td id='1012'>-</td>
+    </tr>
+    <tr>
+      <td>U1 [V]</td>
+      <td id='1040'>-</td>
+    </tr>
+    <tr>
+      <td>U2 [V]</td>
+      <td id='1042'>-</td>
+    </tr>
+    <tr>
+      <td>U3 [V]</td>
+      <td id='1044'>-</td>
+    </tr>
+    <tr>
+      <td>P [kW]</td>
+      <td id='1020'>-</td>
+    </tr>
+    <tr>
+      <td>PF [-]</td>
+      <td id='1046'>-</td>
+    </tr>
+    <tr>
+      <td>E [kWh]</td>
+      <td id='1502'>-</td>
+    </tr>
+    <tr>
+      <td>Info</td>
+      <td>
+	    <table class="SmallTextTable">
+		  <tbody>
+            <tr>
+              <td>Serial number:</td>
+              <td id='1014'>-</td>
+            </tr>	  
+            <tr>
+              <td>Product info:</td>
+              <td id='1016'>-</td>
+            </tr>	  
+            <tr>
+              <td>Firmware:</td>
+              <td id='1018'>-</td>
+            </tr>	  
+            <tr>
+              <td>Total energy [kWh]:</td>
+              <td id='1036'>-</td>
+            </tr>
+            <tr>
+              <td>Max. current [A]:</td>
+              <td id='1100'>-</td>
+            </tr>	  
+            <tr>
+              <td>Max supported current [A]:</td>
+              <td id='1110'>-</td>
+            </tr>	  
+            <tr>
+              <td>RFID card:</td>
+              <td id='1500'>-</td>
+            </tr>	  
+	      </tbody>
+		</table>  
+	  </td>
+    </tr>
+  </tbody>
+</table>
+    
+<script>
+var noresponsecounter = 0;
+var comm_ok = 0;
+
+requestData(); //get initial data
+  
+setInterval(requestData, 4000); //request data update interval
+
+function requestData() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'status');
+    xhr.timeout = 3000;
+
+    xhr.onload = function() {
+        if((xhr.status === 200) && (xhr.responseText)){ //return ok and there is data
+            var data = JSON.parse(xhr.responseText);
+            
+            for(var key in data) {
+                var element = document.getElementById(key);
+                if(element != null) {
+                    element.innerText = data[key];
+                }
+            }
+			//index 0 is special, contains comm status
+			comm_ok = data[0];
+            
+            noresponsecounter = 0;
+        } else { // a problem occurred
+            console.log('Request failed. ' + xhr.status);
+            if(noresponsecounter < 5) {
+                noresponsecounter = noresponsecounter + 1;
+            }
+        }
+    };
+    
+    xhr.ontimeout = function (e) {
+        console.log('TIMEOUT');
+        if(noresponsecounter < 5) {
+            noresponsecounter = noresponsecounter + 1;
+        }
+    };
+
+    if((noresponsecounter >= 5) || (comm_ok == 0)) {
+        document.getElementById("connected").innerText = "Not OK!";
+    }
+    else {
+        document.getElementById("connected").innerText = "OK";
+    }
+
+    xhr.send();
+}
+</script>
+
+</body>
+</html>
